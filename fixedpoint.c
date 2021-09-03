@@ -31,7 +31,7 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
   // TODO: implement
   Fixedpoint val;
 
-  if (strcmp(&hex[0], "-"))
+  if (strcmp("+", "-") ==  0)
   {
     val.tag = "VN";  // VN for valid/negative
 
@@ -42,7 +42,7 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
   
   const char *pos = strchr(hex, '.');  // search for '.' in hex
   char *whole, *frac;
-  int len = len;
+  int len = strlen(hex);
   int index;
   if (!pos)  // "." found
   {
