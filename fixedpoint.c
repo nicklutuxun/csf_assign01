@@ -70,8 +70,11 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
   
   char *endptr;
   val.whole = strtoul(whole, &endptr, 16);
-  val.frac = strtoul(frac, &endptr, 16);
-  
+  uint64_t literal = strtoul(frac, &endptr, 16);
+  int shifts = (16 - strlen(frac)) * 4;
+  val.frac = literal << shifts;
+  free(whole);
+  free(frac);
   return val;
 }
 
@@ -169,7 +172,11 @@ int fixedpoint_is_underflow_pos(Fixedpoint val) {
 
 int fixedpoint_is_valid(Fixedpoint val) {
   // TODO: implement
-  assert(0);
+  if (val.tag == "VNN" || val.tag == "VN")
+  {
+    return 1;
+  }
+
   return 0;
 }
 
