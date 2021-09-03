@@ -42,10 +42,10 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
   char *whole, *frac;
   int len = strlen(hex);
   int index;
-  if (!pos)  // "." found
+  if (pos)  // "." found
   {
     index = pos - hex;
-    if (strcmp(val.tag, "VN"))  // if valid/negative
+    if (strcmp(val.tag, "VN") == 0)  // if valid/negative
     {
       whole = (char *)malloc((index - 1) * sizeof(char));
       frac = (char *)malloc(len - index + 1);
@@ -55,10 +55,10 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
       whole = (char *)malloc(index * sizeof(char));
       frac = (char *)malloc(len - index + 1);
       memcpy(whole, &hex[0], index);
-      memcpy(frac, pos, len - index + 1);
+      memcpy(frac, pos + 1, len - index + 1);
     }
   } else {
-    if (strcmp(val.tag, "VN"))
+    if (strcmp(val.tag, "VN") == 0)
     {
       char *whole = (char *)malloc(len - 1);
       memcpy(whole, &hex[1], len - 1);
