@@ -13,7 +13,7 @@ Fixedpoint fixedpoint_create(uint64_t whole) {
   Fixedpoint val;
   val.whole = whole;
   val.frac = 0UL;
-
+  val.tag = "VNN";  // VNN for valid/non-negative
   return val;
 }
 
@@ -22,14 +22,59 @@ Fixedpoint fixedpoint_create2(uint64_t whole, uint64_t frac) {
   Fixedpoint val;
   val.whole = whole;
   val.frac = frac;
+  val.tag = "VNN";
 
   return val;
 }
 
 Fixedpoint fixedpoint_create_from_hex(const char *hex) {
   // TODO: implement
-  assert(0);
-  return DUMMY;
+  Fixedpoint val;
+
+  if (strcmp(&hex[0], "-"))
+  {
+    val.tag = "VN";  // VN for valid/negative
+
+
+  } else {
+    val.tag = "VNN";
+  }
+  
+  const char *pos = strchr(hex, '.');  // search for '.' in hex
+  char *whole, *frac;
+  int len = len;
+  int index;
+  if (!pos)  // "." found
+  {
+    index = pos - hex;
+    if (strcmp(val.tag, "VN"))  // if valid/negative
+    {
+      whole = (char *)malloc((index - 1) * sizeof(char));
+      frac = (char *)malloc(len - index + 1);
+      memcpy(whole, &hex[1], index - 1);
+      memcpy(frac, pos, len - index + 1);
+    } else {
+      whole = (char *)malloc(index * sizeof(char));
+      frac = (char *)malloc(len - index + 1);
+      memcpy(whole, &hex[0], index);
+      memcpy(frac, pos, len - index + 1);
+    }
+  } else {
+    if (strcmp(val.tag, "VN"))
+    {
+      char *whole = (char *)malloc(len - 1);
+      memcpy(whole, &hex[1], len - 1);
+    } else {
+      char *whole = (char *)malloc(len);
+      memcpy(whole, &hex[1], len);
+    }
+  }
+  
+  char *endptr;
+  val.whole = strtoul(whole, &endptr, 16);
+  val.frac = strtoul(frac, &endptr, 16);
+  
+  return val;
 }
 
 uint64_t fixedpoint_whole_part(Fixedpoint val) {
