@@ -7,7 +7,7 @@ typedef struct {
   // TODO: add fields
   uint64_t whole; // the whole part 
   uint64_t frac;  // the fractional part
-  
+  char *tag;
 } Fixedpoint;
 
 // Create a Fixedpoint value representing an integer.
