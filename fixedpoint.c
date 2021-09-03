@@ -31,11 +31,9 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
   // TODO: implement
   Fixedpoint val;
 
-  if (strcmp("+", "-") ==  0)
+  if (strcmp(&hex[0], "-") ==  0)
   {
     val.tag = "VN";  // VN for valid/negative
-
-
   } else {
     val.tag = "VNN";
   }
