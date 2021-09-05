@@ -60,10 +60,10 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
   } else {
     if (strcmp(val.tag, "VN") == 0)
     {
-      char *whole = (char *)malloc(len - 1);
+      whole = (char *)malloc(len - 1);
       memcpy(whole, &hex[1], len - 1);
     } else {
-      char *whole = (char *)malloc(len);
+      whole = (char *)malloc(len);
       memcpy(whole, &hex[1], len);
     }
   }
