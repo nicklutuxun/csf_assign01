@@ -66,6 +66,7 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
       whole = (char *)calloc(len, sizeof(char));
       memcpy(whole, &hex[1], len);
     }
+      frac = "0";
   }
   
   char *endptr;
