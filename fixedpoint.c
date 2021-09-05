@@ -47,23 +47,23 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
     index = pos - hex;
     if (strcmp(val.tag, "VN") == 0)  // if valid/negative
     {
-      whole = (char *)malloc((index - 1) * sizeof(char));
-      frac = (char *)malloc(len - index + 1);
+      whole = (char *)calloc((index - 1), sizeof(char));
+      frac = (char *)calloc(len - index + 1, sizeof(char));
       memcpy(whole, &hex[1], index - 1);
       memcpy(frac, pos, len - index + 1);
     } else {
-      whole = (char *)malloc(index * sizeof(char));
-      frac = (char *)malloc(len - index + 1);
+      whole = (char *)calloc(index, sizeof(char));
+      frac = (char *)calloc(len - index + 1, sizeof(char));
       memcpy(whole, &hex[0], index);
       memcpy(frac, pos + 1, len - index + 1);
     }
   } else {
     if (strcmp(val.tag, "VN") == 0)
     {
-      whole = (char *)malloc(len - 1);
+      whole = (char *)calloc(len - 1, sizeof(char));
       memcpy(whole, &hex[1], len - 1);
     } else {
-      whole = (char *)malloc(len);
+      whole = (char *)calloc(len, sizeof(char));
       memcpy(whole, &hex[1], len);
     }
   }
