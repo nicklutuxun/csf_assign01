@@ -19,16 +19,16 @@ Fixedpoint fixedpoint_create(uint64_t whole) {
 
 Fixedpoint fixedpoint_create2(uint64_t whole, uint64_t frac) {
   // TODO: implement
-//   Fixedpoint val;
-//   val.whole = whole;
-//   val.frac = frac;
-//   val.tag = "VNN";
+  Fixedpoint val;
+  val.whole = whole;
+  val.frac = frac;
+  val.tag = "VNN";
 
-//   return val;
-// }
+  return val;
+}
 
-// Fixedpoint fixedpoint_create_from_hex(const char *hex) {
-//   // TODO: implement
+Fixedpoint fixedpoint_create_from_hex(const char *hex) {
+  // TODO: implement
 //   Fixedpoint val;
 
 //   if (strcmp(&hex[0], "-") ==  0)
