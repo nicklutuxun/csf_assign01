@@ -64,8 +64,9 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
       memcpy(whole, &hex[1], len - 1);
     } else {
       whole = (char *)calloc(len, sizeof(char));
-      memcpy(whole, &hex[1], len);
+      memcpy(whole, &hex[0], len);
     }
+      frac = (char *)calloc(1, sizeof(char));
       frac = "0";
   }
   
@@ -142,7 +143,7 @@ int fixedpoint_is_err(Fixedpoint val) {
 }
 
 int fixedpoint_is_neg(Fixedpoint val) {
-  if (val.tag == "VN") return 1;
+  if (strcmp(val.tag, "VN") == 0) return 1;
   else return 0;
 }
 
@@ -172,7 +173,7 @@ int fixedpoint_is_underflow_pos(Fixedpoint val) {
 
 int fixedpoint_is_valid(Fixedpoint val) {
   // TODO: implement
-  if (val.tag == "VNN" || val.tag == "VN")
+  if ((strcmp(val.tag, "VNN") == 0) || (strcmp(val.tag, "VN") == 0))
   {
     return 1;
   }
