@@ -13,7 +13,7 @@ Fixedpoint fixedpoint_create(uint64_t whole) {
   Fixedpoint val;
   val.whole = whole;
   val.frac = 0UL;
-  val.tag = "VNN";  // VNN for valid/non-negative
+  val.tag = TAG_VALID_NONNEGATIVE;  // VNN for valid/non-negative
   return val;
 }
 
@@ -22,7 +22,7 @@ Fixedpoint fixedpoint_create2(uint64_t whole, uint64_t frac) {
   Fixedpoint val;
   val.whole = whole;
   val.frac = frac;
-  val.tag = "VNN";
+  val.tag = TAG_VALID_NONNEGATIVE;
 
   return val;
 }
@@ -33,9 +33,9 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
 
   if (strcmp(&hex[0], "-") ==  0)
   {
-    val.tag = "VN";  // VN for valid/negative
+    val.tag = TAG_VALID_NEGATIVE;  // VN for valid/negative
   } else {
-    val.tag = "VNN";
+    val.tag = TAG_VALID_NONNEGATIVE;
   }
   
   const char *pos = strchr(hex, '.');  // search for '.' in hex
@@ -45,7 +45,7 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
   if (pos)  // "." found
   {
     index = pos - hex;
-    if (strcmp(val.tag, "VN") == 0)  // if valid/negative
+    if (val.tag == TAG_VALID_NEGATIVE)  // if valid/negative
     {
       whole = (char *)calloc((index - 1), sizeof(char));
       frac = (char *)calloc(len - index + 1, sizeof(char));
@@ -58,7 +58,7 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
       memcpy(frac, pos + 1, len - index + 1);
     }
   } else {
-    if (strcmp(val.tag, "VN") == 0)
+    if (val.tag == TAG_VALID_NEGATIVE == 0)
     {
       whole = (char *)calloc(len - 1, sizeof(char));
       memcpy(whole, &hex[1], len - 1);
@@ -143,7 +143,7 @@ int fixedpoint_is_err(Fixedpoint val) {
 }
 
 int fixedpoint_is_neg(Fixedpoint val) {
-  if (strcmp(val.tag, "VN") == 0) return 1;
+  if (val.tag == TAG_VALID_NEGATIVE == 0) return 1;
   else return 0;
 }
 
@@ -173,7 +173,7 @@ int fixedpoint_is_underflow_pos(Fixedpoint val) {
 
 int fixedpoint_is_valid(Fixedpoint val) {
   // TODO: implement
-  if ((strcmp(val.tag, "VNN") == 0) || (strcmp(val.tag, "VN") == 0))
+  if (val.tag == TAG_VALID_NONNEGATIVE == 0 || val.tag == TAG_VALID_NEGATIVE == 0)
   {
     return 1;
   }
