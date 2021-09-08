@@ -72,17 +72,15 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
       whole = (char *)calloc(len, sizeof(char));
       memcpy(whole, &hex[0], len);
     }
-      frac = (char *)calloc(16, sizeof(char));
+      frac = (char *)calloc(17, sizeof(char)); // 1 addition space for '\0'
       strcpy(frac, "0");
   }
   
   char *endptr;
-  
-  uint64_t whole_literal = strtoul(whole, &endptr, 16);
-  val.whole = whole_literal;
-  uint64_t frac_literal = strtoul(frac, &endptr, 16);
+  val.whole = strtoul(whole, &endptr, 16);
+  uint64_t literal = strtoul(frac, &endptr, 16);
   int shifts = (16 - strlen(frac)) * 4;
-  val.frac = frac_literal << shifts;
+  val.frac = literal << shifts;
   free(whole);
   free(frac);
   return val;
