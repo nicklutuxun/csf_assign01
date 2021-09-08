@@ -77,10 +77,12 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
   }
   
   char *endptr;
-  val.whole = strtoul(whole, &endptr, 16);
-  uint64_t literal = strtoul(frac, &endptr, 16);
+  
+  uint64_t whole_literal = strtoul(whole, &endptr, 16);
+  val.whole = whole_literal;
+  uint64_t frac_literal = strtoul(frac, &endptr, 16);
   int shifts = (16 - strlen(frac)) * 4;
-  val.frac = literal << shifts;
+  val.frac = frac_literal << shifts;
   free(whole);
   free(frac);
   return val;
