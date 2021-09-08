@@ -256,7 +256,8 @@ int fixedpoint_is_valid(Fixedpoint val);
 char *fixedpoint_format_as_hex(Fixedpoint val);
 
 // Helper function
-// Determine whether the argument char * in fixedpoint_create_from_hex is invalid
+// Determine whether the argument char * in fixedpoint_create_from_hex are hex
+// digits
 // 
 // Parameters:
 //   hex - the hex value

@@ -37,7 +37,7 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
     return val;
   }
   
-  if (strcmp(&hex[0], "-") ==  0)
+  if (hex[0] == '-')
   {
     val.tag = TAG_VALID_NEGATIVE;  // VN for valid/negative
   } else {
@@ -55,25 +55,30 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
     {
       whole = (char *)calloc(index, sizeof(char));
       frac = (char *)calloc(len - index, sizeof(char));
-      memcpy(whole, &hex[1], index );
-      memcpy(frac, pos, len - index);
+      memcpy(whole, &hex[1], index - 1);
+      memcpy(frac, pos + 1, len - index);
     } else {
       whole = (char *)calloc(index + 1, sizeof(char));
       frac = (char *)calloc(len - index, sizeof(char));
-      memcpy(whole, &hex[0], index + 1);
+      memcpy(whole, &hex[0], index);
       memcpy(frac, pos + 1, len - index);
     }
   } else {
     if (val.tag == TAG_VALID_NEGATIVE)
     {
       whole = (char *)calloc(len, sizeof(char));
-      memcpy(whole, &hex[1], len);
+      memcpy(whole, &hex[1], len - 1);
     } else {
       whole = (char *)calloc(len + 1, sizeof(char));
       memcpy(whole, &hex[0], len + 1);
     }
       frac = (char *)calloc(2, sizeof(char)); // 1 more to contain '\0'
       strcpy(frac, "0");
+  }
+  
+  if (strlen(whole) > 16 || strlen(frac) > 16)
+  {
+    val.tag = TAG_ERR;
   }
   
   char *endptr;
