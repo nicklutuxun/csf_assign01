@@ -3,7 +3,8 @@
 
 #include <stdint.h>
 
-enum Tag {TAG_VALID_NONNEGATIVE, TAG_VALID_NEGATIVE};
+enum Tag {TAG_VALID_NONNEGATIVE, TAG_VALID_NEGATIVE, TAG_ERR, TAG_POS_OVERFLOW,
+            TAG_NEG_OVERFLOW, TAG_POS_UNDERFLOW, TAG_NEG_UNDERFLOW};
 
 typedef struct {
   // TODO: add fields
@@ -253,5 +254,16 @@ int fixedpoint_is_valid(Fixedpoint val);
 //   dynamically allocated character string containing the representation
 //   of the Fixedpoint value
 char *fixedpoint_format_as_hex(Fixedpoint val);
+
+// Helper function
+// Determine whether the argument char * in fixedpoint_create_from_hex is invalid
+// 
+// Parameters:
+//   hex - the hex value
+//
+// Returns:
+//   1 if hex represents a valid hex string;
+//   0 otherwise 
+int hex_is_valid(const char *hex);
 
 #endif // FIXEDPREC_H
