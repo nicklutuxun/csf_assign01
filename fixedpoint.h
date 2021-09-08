@@ -3,11 +3,13 @@
 
 #include <stdint.h>
 
+enum Tag {TAG_VALID_NONNEGATIVE, TAG_VALID_NEGATIVE};
+
 typedef struct {
   // TODO: add fields
   uint64_t whole; // the whole part 
   uint64_t frac;  // the fractional part
-  char *tag;
+  enum Tag tag;
 } Fixedpoint;
 
 // Create a Fixedpoint value representing an integer.
