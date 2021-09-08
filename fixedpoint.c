@@ -143,7 +143,7 @@ int fixedpoint_is_err(Fixedpoint val) {
 }
 
 int fixedpoint_is_neg(Fixedpoint val) {
-  if (val.tag == TAG_VALID_NEGATIVE == 0) return 1;
+  if (val.tag == TAG_VALID_NEGATIVE) return 1;
   else return 0;
 }
 
@@ -173,7 +173,7 @@ int fixedpoint_is_underflow_pos(Fixedpoint val) {
 
 int fixedpoint_is_valid(Fixedpoint val) {
   // TODO: implement
-  if (val.tag == TAG_VALID_NONNEGATIVE == 0 || val.tag == TAG_VALID_NEGATIVE == 0)
+  if (val.tag == TAG_VALID_NONNEGATIVE || val.tag == TAG_VALID_NEGATIVE)
   {
     return 1;
   }
