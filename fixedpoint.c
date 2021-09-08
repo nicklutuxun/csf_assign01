@@ -31,7 +31,7 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
   // TODO: implement
   Fixedpoint val;
 
-  if (hex_is_valid(hex))
+  if (!hex_is_valid(hex))
   {
     val.tag = TAG_ERR;
     return val;
@@ -64,7 +64,7 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
       memcpy(frac, pos + 1, len - index + 1);
     }
   } else {
-    if (val.tag == TAG_VALID_NEGATIVE == 0)
+    if (val.tag == TAG_VALID_NEGATIVE)
     {
       whole = (char *)calloc(len - 1, sizeof(char));
       memcpy(whole, &hex[1], len - 1);
@@ -72,8 +72,8 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
       whole = (char *)calloc(len, sizeof(char));
       memcpy(whole, &hex[0], len);
     }
-      frac = (char *)calloc(1, sizeof(char));
-      frac = "0";
+      frac = (char *)calloc(16, sizeof(char));
+      strcpy(frac, "0");
   }
   
   char *endptr;
@@ -198,14 +198,14 @@ char *fixedpoint_format_as_hex(Fixedpoint val) {
 }
 
 int hex_is_valid(const char *hex) {
-  if (!((hex[0] >= 'a' && hex[0] <= 'z') || (hex[0] >= 'A' && hex[0] <= 'Z') || (hex[0] == '-')))
+  if (!(isxdigit(hex[0]) || (hex[0] == '-')))
   {
     return 0;
   }
 
-  for (uint64_t i = 1; i < strlen(hex) + 1; i++)
+  for (uint64_t i = 1; i < strlen(hex); i++)
   {
-    if (!((hex[i] >= 'a' && hex[i] <= 'z') || (hex[i] >= 'A' && hex[i] <= 'Z') || (hex[i] == '.')))
+    if (!(isxdigit(hex[i]) || (hex[i] == '.')))
     {
       return 0;
     }
