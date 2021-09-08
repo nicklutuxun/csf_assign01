@@ -109,6 +109,14 @@ void test_create_from_hex(TestObjs *objs) {
   ASSERT(0xf6a5865UL == fixedpoint_whole_part(val1));
 
   ASSERT(0x00f2000000000000UL == fixedpoint_frac_part(val1));
+
+  Fixedpoint val2 = fixedpoint_create_from_hex("f6a5865");
+
+  ASSERT(fixedpoint_is_valid(val2));
+
+  ASSERT(0xf6a5865UL == fixedpoint_whole_part(val2));
+
+  ASSERT(0x0000000000000000UL == fixedpoint_frac_part(val2));
 }
 
 void test_format_as_hex(TestObjs *objs) {
