@@ -116,7 +116,7 @@ Fixedpoint fixedpoint_sub(Fixedpoint left, Fixedpoint right) {
 Fixedpoint fixedpoint_negate(Fixedpoint val) {
   // TODO: implement
   if (val.tag == TAG_VALID_NONNEGATIVE) {
-    if (!(val.whole == 0UL && val.frac == 0UL)) val.tag = TAG_VALID_NEGATIVE;
+    if (!(fixedpoint_is_zero(val))) val.tag = TAG_VALID_NEGATIVE;
   }
   else if (val.tag == TAG_VALID_NEGATIVE) val.tag = TAG_VALID_NONNEGATIVE;
   return val;
