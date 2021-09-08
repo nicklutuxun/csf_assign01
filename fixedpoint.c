@@ -53,26 +53,26 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
     index = pos - hex;
     if (val.tag == TAG_VALID_NEGATIVE)  // if valid/negative
     {
-      whole = (char *)calloc((index - 1), sizeof(char));
-      frac = (char *)calloc(len - index + 1, sizeof(char));
+      whole = (char *)calloc(index, sizeof(char));
+      frac = (char *)calloc(len - index, sizeof(char));
       memcpy(whole, &hex[1], index - 1);
       memcpy(frac, pos, len - index + 1);
     } else {
-      whole = (char *)calloc(index, sizeof(char));
-      frac = (char *)calloc(len - index + 1, sizeof(char));
+      whole = (char *)calloc(index + 1, sizeof(char));
+      frac = (char *)calloc(len - index, sizeof(char));
       memcpy(whole, &hex[0], index);
       memcpy(frac, pos + 1, len - index + 1);
     }
   } else {
     if (val.tag == TAG_VALID_NEGATIVE)
     {
-      whole = (char *)calloc(len - 1, sizeof(char));
+      whole = (char *)calloc(len, sizeof(char));
       memcpy(whole, &hex[1], len - 1);
     } else {
-      whole = (char *)calloc(len, sizeof(char));
+      whole = (char *)calloc(len + 1, sizeof(char));
       memcpy(whole, &hex[0], len);
     }
-      frac = (char *)calloc(17, sizeof(char)); // 1 addition space for '\0'
+      frac = (char *)calloc(1, sizeof(char));
       strcpy(frac, "0");
   }
   
