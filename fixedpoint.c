@@ -247,13 +247,30 @@ int hex_is_valid(const char *hex) {
     return 0;
   }
   
-
+  int counter = 0; // count for decimal point
   for (uint64_t i = 1; i < strlen(hex); i++)
   {
     if (!(isxdigit(hex[i]) || (hex[i] == '.')))
     {
       return 0;
     }
+
+    if (hex[i] == '.')
+    {
+      counter++;
+    }    
   }
+
+  if (!isxdigit(hex[strlen(hex)-1])) // if last digit is not hex digit
+  {
+    return 0;
+  }
+  
+
+  if (counter > 1)
+  {
+    return 0;
+  }
+  
   return 1;
 }
