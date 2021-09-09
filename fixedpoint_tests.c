@@ -122,6 +122,9 @@ void test_create_from_hex(TestObjs *objs) {
 
   Fixedpoint val5 = fixedpoint_create_from_hex("--f6a5865");
   ASSERT(!fixedpoint_is_valid(val5));
+
+  Fixedpoint val6 = fixedpoint_create_from_hex("-.f6a5865");
+  ASSERT(!fixedpoint_is_valid(val6));
 }
 
 void test_format_as_hex(TestObjs *objs) {
