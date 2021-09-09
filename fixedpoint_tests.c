@@ -112,10 +112,16 @@ void test_create_from_hex(TestObjs *objs) {
   ASSERT(0xf6a5865UL == fixedpoint_whole_part(val2));
   ASSERT(0x0000000000000000UL == fixedpoint_frac_part(val2));
 
-  Fixedpoint val3 = fixedpoint_create_from_hex("f!6a5865");
-  ASSERT(!fixedpoint_is_valid(val3));
+  Fixedpoint val3 = fixedpoint_create_from_hex("F6A5865.00F2");
+  ASSERT(fixedpoint_is_valid(val3));
+  ASSERT(0xf6a5865UL == fixedpoint_whole_part(val3));
+  ASSERT(0x00f2000000000000UL == fixedpoint_frac_part(val3));
 
-  Fixedpoint val4 = fixedpoint_create_from_hex("");
+  Fixedpoint val4 = fixedpoint_create_from_hex("f!6a5865");
+  ASSERT(!fixedpoint_is_valid(val4));
+
+  Fixedpoint val5 = fixedpoint_create_from_hex("--f6a5865");
+  ASSERT(!fixedpoint_is_valid(val5));
 }
 
 void test_format_as_hex(TestObjs *objs) {
