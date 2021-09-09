@@ -103,8 +103,47 @@ uint64_t fixedpoint_frac_part(Fixedpoint val) {
 
 Fixedpoint fixedpoint_add(Fixedpoint left, Fixedpoint right) {
   // TODO: implement
-  assert(0);
-  return DUMMY;
+  Fixedpoint res;
+  uint64_t whole_res;
+  uint64_t frac_res;
+  if (left.tag == right.tag) {
+    whole_res = left.whole + right.whole;
+    frac_res = left.frac + right.frac;
+    if (frac_res < left.frac || frac_res < right.frac) {
+      whole_res += 1UL;
+    }
+    if (whole_res < left.whole || whole_res < right.whole) {
+      if (left.tag == TAG_VALID_NONNEGATIVE) res.tag = TAG_POS_OVERFLOW;
+      else res.tag = TAG_NEG_OVERFLOW;
+    }
+    else {
+      if (left.tag == TAG_VALID_NONNEGATIVE) res.tag = TAG_VALID_NONNEGATIVE;
+      else res.tag = TAG_VALID_NEGATIVE;
+    }
+  }
+  else {
+    if (left.tag == TAG_VALID_NEGATIVE) {
+      whole_res = (right.whole >= left.whole) ? (right.whole - left.whole) : (left.whole - right.whole);
+      frac_res = right.frac - left.frac;
+      if (frac_res > right.frac) {
+        whole_res = (right.whole >= left.whole) ? (whole_res - 1) : (whole_res + 1);
+      }
+      if (right.whole > left.whole || (right.whole == left.whole && right.frac > left.frac)) res.tag = TAG_VALID_NONNEGATIVE;
+      else res.tag = TAG_VALID_NEGATIVE;
+    }
+    else {
+      whole_res = (right.whole >= left.whole) ? (right.whole - left.whole) : (left.whole - right.whole);
+      frac_res = left.frac - right.frac;
+      if (frac_res > left.frac) {
+        whole_res = (right.whole >= left.whole) ? (whole_res + 1) : (whole_res - 1);
+      }
+      if (left.whole > right.whole || (left.whole == right.whole && left.frac > right.frac)) res.tag = TAG_VALID_NONNEGATIVE;
+      else res.tag = TAG_VALID_NEGATIVE;
+    }
+  }
+  res.whole = whole_res;
+  res.frac = frac_res;
+  return res;
 }
 
 Fixedpoint fixedpoint_sub(Fixedpoint left, Fixedpoint right) {
