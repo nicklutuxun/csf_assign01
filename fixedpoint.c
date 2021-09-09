@@ -147,9 +147,9 @@ Fixedpoint fixedpoint_add(Fixedpoint left, Fixedpoint right) {
 }
 
 Fixedpoint fixedpoint_sub(Fixedpoint left, Fixedpoint right) {
-  // TODO: implement
-  assert(0);
-  return DUMMY;
+  if (right.tag == TAG_VALID_NEGATIVE) right.tag = TAG_VALID_NONNEGATIVE;
+  else if (right.tag == TAG_VALID_NONNEGATIVE) right.tag = TAG_VALID_NEGATIVE;
+  return (fixedpoint_add(left, right));
 }
 
 Fixedpoint fixedpoint_negate(Fixedpoint val) {
@@ -168,9 +168,7 @@ Fixedpoint fixedpoint_halve(Fixedpoint val) {
 }
 
 Fixedpoint fixedpoint_double(Fixedpoint val) {
-  // TODO: implement
-  assert(0);
-  return DUMMY;
+  return fixedpoint_add(val, val);
 }
 
 int fixedpoint_compare(Fixedpoint left, Fixedpoint right) {
