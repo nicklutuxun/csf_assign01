@@ -242,6 +242,12 @@ int hex_is_valid(const char *hex) {
     return 0;
   }
 
+  if (hex[0] == '-' && !(isxdigit(hex[1])))
+  { 
+    return 0;
+  }
+  
+
   for (uint64_t i = 1; i < strlen(hex); i++)
   {
     if (!(isxdigit(hex[i]) || (hex[i] == '.')))
