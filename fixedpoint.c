@@ -151,7 +151,6 @@ int fixedpoint_is_zero(Fixedpoint val) {
 }
 
 int fixedpoint_is_err(Fixedpoint val) {
-  // TODO: implement
   if (val.tag == TAG_ERR)
   {
     return 1;
@@ -165,31 +164,26 @@ int fixedpoint_is_neg(Fixedpoint val) {
 }
 
 int fixedpoint_is_overflow_neg(Fixedpoint val) {
-  // TODO: implement
-  assert(0);
-  return 0;
+  if (val.tag == TAG_NEG_OVERFLOW) return 1;
+  else return 0;
 }
 
 int fixedpoint_is_overflow_pos(Fixedpoint val) {
-  // TODO: implement
-  assert(0);
-  return 0;
+  if (val.tag == TAG_POS_OVERFLOW) return 1;
+  else return 0;
 }
 
 int fixedpoint_is_underflow_neg(Fixedpoint val) {
-  // TODO: implement
-  assert(0);
-  return 0;
+  if (val.tag == TAG_NEG_UNDERFLOW) return 1;
+  else return 0;
 }
 
 int fixedpoint_is_underflow_pos(Fixedpoint val) {
-  // TODO: implement
-  assert(0);
-  return 0;
+  if (val.tag == TAG_POS_UNDERFLOW) return 1;
+  else return 0;
 }
 
 int fixedpoint_is_valid(Fixedpoint val) {
-  // TODO: implement
   if (val.tag == TAG_VALID_NONNEGATIVE || val.tag == TAG_VALID_NEGATIVE)
   {
     return 1;
