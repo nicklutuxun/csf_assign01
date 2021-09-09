@@ -258,7 +258,7 @@ int hex_is_valid(const char *hex) {
     if (hex[i] == '.')
     {
       counter++;
-    }    
+    }
   }
 
   if (!isxdigit(hex[strlen(hex)-1])) // if last digit is not hex digit
