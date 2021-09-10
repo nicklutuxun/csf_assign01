@@ -237,28 +237,23 @@ char *fixedpoint_format_as_hex(Fixedpoint val) {
 }
 
 int hex_is_valid(const char *hex) {
-  if (!(isxdigit(hex[0]) || (hex[0] == '-')))
+  if (!(isxdigit(hex[0]) || (hex[0] == '-') || (hex[0] == '.')))
   {
     return 0;
   }
 
-  if (hex[0] == '0' && hex[1] != '.' && strlen(hex) != 1)
-  {
-    return 0;
-  }
-
-  if (hex[0] == '-' && hex[1] =='0' && hex[2] != '.' && strlen(hex) != 2)
-  {
-    return 0;
-  }
-  
-  if (hex[0] == '-' && !(isxdigit(hex[1])))
+  if (hex[0] == '-' && !(isxdigit(hex[1])) && hex[1] != '.')
   { 
     return 0;
   }
   
   int counter = 0; // count for decimal point
-  for (uint64_t i = 1; i < strlen(hex); i++)
+  if (hex[0] == '.' || ((hex[0] == '-') && (hex[1] == '.')))
+  {
+    counter++;
+  }
+  
+  for (uint64_t i = counter + 1; i < strlen(hex); i++)
   {
     if (!(isxdigit(hex[i]) || (hex[i] == '.')))
     {
@@ -271,7 +266,7 @@ int hex_is_valid(const char *hex) {
     }
   }
 
-  if (!isxdigit(hex[strlen(hex)-1])) // if last digit is not hex digit
+  if (!isxdigit(hex[strlen(hex)-1]) && hex[strlen(hex)-1] != '.') // if last digit is not hex digit
   {
     return 0;
   }
