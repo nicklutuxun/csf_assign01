@@ -176,7 +176,7 @@ Fixedpoint fixedpoint_halve(Fixedpoint val) {
     res.tag = val.tag;
   }
   frac_res = frac_res/2;
-  if (val.whole % 2 != 0) frac_res += 0x4000000000000000UL;
+  if (val.whole % 2 != 0) frac_res += 0x8000000000000000UL;
   res.whole = whole_res;
   res.frac = frac_res;
   return res;
