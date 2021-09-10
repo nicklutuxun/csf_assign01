@@ -237,12 +237,12 @@ char *fixedpoint_format_as_hex(Fixedpoint val) {
 }
 
 int hex_is_valid(const char *hex) {
-  if (!(isxdigit(hex[0]) || (hex[0] == '-') || (hex[0] == '.')))
+  if (!(isxdigit(hex[0]) || (hex[0] == '-') || (hex[0] == '.'))) // first digit can only have hex/-/.
   {
     return 0;
   }
 
-  if (hex[0] == '-' && !(isxdigit(hex[1])) && hex[1] != '.')
+  if (hex[0] == '-' && !(isxdigit(hex[1])) && hex[1] != '.') // leading '-' can only followed by hex besides '.'
   { 
     return 0;
   }
@@ -272,7 +272,7 @@ int hex_is_valid(const char *hex) {
   }
   
 
-  if (counter > 1)
+  if (counter > 1) // if more than 1 '.' exist
   {
     return 0;
   }
