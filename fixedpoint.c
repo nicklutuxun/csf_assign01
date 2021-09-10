@@ -31,15 +31,15 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
   // TODO: implement
   Fixedpoint val;
 
-  if (!hex_is_valid(hex))
+  if (!hex_is_valid(hex)) // error if parameter hex is not valid
   {
     val.tag = TAG_ERR;
     return val;
   }
   
-  if (hex[0] == '-')
+  if (hex[0] == '-') // determine sign
   {
-    val.tag = TAG_VALID_NEGATIVE;  // VN for valid/negative
+    val.tag = TAG_VALID_NEGATIVE;
   } else {
     val.tag = TAG_VALID_NONNEGATIVE;
   }
@@ -48,22 +48,25 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
   char *whole, *frac;
   int len = strlen(hex);
   int index;
-  if (pos)  // "." found
+  if (pos)  // '.' found
   {
-    index = pos - hex;
-    if (val.tag == TAG_VALID_NEGATIVE)  // if valid/negative
+    index = pos - hex; // index of '.'
+    if (val.tag == TAG_VALID_NEGATIVE)
     {
+      // copy whole and frac part into temporary char*
       whole = (char *)calloc(index, sizeof(char));
       frac = (char *)calloc(len - index, sizeof(char));
       memcpy(whole, &hex[1], index - 1);
       memcpy(frac, pos + 1, len - index);
     } else {
+      // copy whole and frac part into temporary char*
       whole = (char *)calloc(index + 1, sizeof(char));
       frac = (char *)calloc(len - index, sizeof(char));
       memcpy(whole, &hex[0], index);
       memcpy(frac, pos + 1, len - index);
     }
   } else {
+    // '.' not found
     if (val.tag == TAG_VALID_NEGATIVE)
     {
       whole = (char *)calloc(len, sizeof(char));
@@ -82,10 +85,13 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
   }
   
   char *endptr;
-  val.whole = strtoul(whole, &endptr, 16);
-  uint64_t literal = strtoul(frac, &endptr, 16);
+  // convert whole part into uint64_t
+  val.whole = strtoul(whole, &endptr, 16); 
+  // convert frac part into uint64_t. 
+  //We use variable literal here to make following shifts more convenient
+  uint64_t literal = strtoul(frac, &endptr, 16); 
   int shifts = (16 - strlen(frac)) * 4;
-  val.frac = literal << shifts;
+  val.frac = literal << shifts; 
   free(whole);
   free(frac);
   return val;
@@ -255,7 +261,7 @@ int hex_is_valid(const char *hex) {
   
   for (uint64_t i = counter + 1; i < strlen(hex); i++)
   {
-    if (!(isxdigit(hex[i]) || (hex[i] == '.')))
+    if (!(isxdigit(hex[i]) || (hex[i] == '.'))) // middle sequence can only have hex or '.'
     {
       return 0;
     }
