@@ -166,9 +166,22 @@ Fixedpoint fixedpoint_negate(Fixedpoint val) {
 }
 
 Fixedpoint fixedpoint_halve(Fixedpoint val) {
-  // TODO: implement
-  assert(0);
-  return DUMMY;
+  Fixedpoint res;
+  uint64_t whole_res = val.whole/2;
+  uint64_t frac_res = val.frac;
+  if (val.whole % 2 != 0) {
+    frac_res += (1UL<<63);
+  }
+  if (frac_res % 2 != 0) {
+    res.tag = (val.tag == TAG_VALID_NONNEGATIVE) ? TAG_POS_UNDERFLOW : TAG_NEG_UNDERFLOW;
+  }
+  else {
+    res.tag = val.tag;
+  }
+  frac_res /= 2;
+  res.whole = whole_res;
+  res.frac = frac_res;
+  return res;
 }
 
 Fixedpoint fixedpoint_double(Fixedpoint val) {
