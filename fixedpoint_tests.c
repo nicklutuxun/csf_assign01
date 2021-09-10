@@ -188,7 +188,16 @@ void test_fixedpoint_halve(TestObjs *objs) {
   Fixedpoint val1half = fixedpoint_halve(val1);
   ASSERT(fixedpoint_is_valid(val1half));
   ASSERT(0x7b52c32UL == fixedpoint_whole_part(val1half));
-  ASSERT(0x4079000000000000UL == fixedpoint_frac_part(val1half));
+  ASSERT(0x8079000000000000UL == fixedpoint_frac_part(val1half));
+
+  Fixedpoint val2 = fixedpoint_create_from_hex("0.0000000000000001");
+  Fixedpoint val2half = fixedpoint_halve(val2);
+  ASSERT(!fixedpoint_is_valid(val2half));
+
+  Fixedpoint val3 = fixedpoint_create_from_hex("-f6a5865.00f2");
+  Fixedpoint val3half = fixedpoint_halve(val3);
+  ASSERT(0x7b52c32UL == fixedpoint_whole_part(val3half));
+  ASSERT(0x8079000000000000UL == fixedpoint_frac_part(val3half));
 }
 
 void test_format_as_hex(TestObjs *objs) {
