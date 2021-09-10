@@ -242,6 +242,16 @@ int hex_is_valid(const char *hex) {
     return 0;
   }
 
+  if (hex[0] == '0' && hex[1] != '.' && strlen(hex) != 1)
+  {
+    return 0;
+  }
+
+  if (hex[0] == '-' && hex[1] =='0' && hex[2] != '.' && strlen(hex) != 2)
+  {
+    return 0;
+  }
+  
   if (hex[0] == '-' && !(isxdigit(hex[1])))
   { 
     return 0;
