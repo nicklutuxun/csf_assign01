@@ -112,19 +112,27 @@ Fixedpoint fixedpoint_add(Fixedpoint left, Fixedpoint right) {
   Fixedpoint res;
   uint64_t whole_res;
   uint64_t frac_res;
+  int tag_conversion_flag = 0;
   if (left.tag == right.tag) {
     whole_res = left.whole + right.whole;
+    if (whole_res < left.whole || whole_res < right.whole) {
+      if (left.tag == TAG_VALID_NONNEGATIVE) res.tag = TAG_POS_OVERFLOW;
+      else res.tag = TAG_NEG_OVERFLOW;
+      tag_conversion_flag = 1;
+    }
     frac_res = left.frac + right.frac;
     if (frac_res < left.frac || frac_res < right.frac) {
       whole_res += 1UL;
     }
-    if (whole_res < left.whole || whole_res < right.whole) {
-      if (left.tag == TAG_VALID_NONNEGATIVE) res.tag = TAG_POS_OVERFLOW;
-      else res.tag = TAG_NEG_OVERFLOW;
-    }
-    else {
-      if (left.tag == TAG_VALID_NONNEGATIVE) res.tag = TAG_VALID_NONNEGATIVE;
-      else res.tag = TAG_VALID_NEGATIVE;
+    if (!tag_conversion_flag) {
+      if (whole_res < left.whole || whole_res < right.whole) {
+        if (left.tag == TAG_VALID_NONNEGATIVE) res.tag = TAG_POS_OVERFLOW;
+        else res.tag = TAG_NEG_OVERFLOW;
+      }
+      else {
+        if (left.tag == TAG_VALID_NONNEGATIVE) res.tag = TAG_VALID_NONNEGATIVE;
+        else res.tag = TAG_VALID_NEGATIVE;
+      }
     }
   }
   else {
