@@ -184,6 +184,7 @@ void test_create_from_hex(TestObjs *objs) {
 }
 
 void test_fixedpoint_halve(TestObjs *objs) {
+  (void) objs;
   Fixedpoint val1 = fixedpoint_create_from_hex("f6a5865.00f2");
   Fixedpoint val1half = fixedpoint_halve(val1);
   ASSERT(fixedpoint_is_valid(val1half));
@@ -297,7 +298,7 @@ void test_sub(TestObjs *objs) {
 }
 
 void test_is_overflow_pos(TestObjs *objs) {
-  /**Fixedpoint sum;
+  Fixedpoint sum;
 
   sum = fixedpoint_add(objs->max, objs->one);
   ASSERT(fixedpoint_is_overflow_pos(sum));
@@ -309,7 +310,6 @@ void test_is_overflow_pos(TestObjs *objs) {
 
   sum = fixedpoint_sub(objs->max, negative_one);
   ASSERT(fixedpoint_is_overflow_pos(sum));
-  **/
 }
 
 void test_is_err(TestObjs *objs) {
