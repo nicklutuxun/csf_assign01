@@ -245,10 +245,38 @@ int fixedpoint_is_valid(Fixedpoint val) {
 
 char *fixedpoint_format_as_hex(Fixedpoint val) {
   // TODO: implement
-  assert(0);
-  char *s = malloc(20);
-  strcpy(s, "<invalid>");
-  return s;
+  char *hexstr, *whole, *frac;
+
+  whole = (char *)calloc(17, sizeof(char));
+  sprintf(whole, "%llx", val.whole);
+  frac = (char *)calloc(17, sizeof(char));
+  sprintf(frac, "%llx", val.frac);
+  hexstr = (char *)calloc(35, sizeof(char));
+
+  if (val.tag == TAG_VALID_NEGATIVE)
+  {
+    strcat(hexstr, "-");
+  }
+
+  strcat(hexstr, whole);
+
+  if (val.frac != 0x0UL)
+  {
+    strcat(hexstr, ".");
+    for (int i = 0; i < (int)(16-strlen(frac)); i++)
+    {
+      strcat(hexstr, "0");
+    }
+    strcat(hexstr, frac);
+  }
+
+  remove_trailing_zeros(hexstr);
+
+  return hexstr;
+  free(hexstr);
+  free(whole);
+  free(frac);
+
 }
 
 int hex_is_valid(const char *hex) {
@@ -293,4 +321,21 @@ int hex_is_valid(const char *hex) {
   }
   
   return 1;
+}
+
+void remove_trailing_zeros(char *str) {
+  if (strcmp(str, "0") == 0)
+  {
+    return;
+  }
+  
+  int index = strlen(str) - 1;
+  while (str[index] == '0') {
+    if (str[index-1] != '0')
+    {
+      str[index] = '\0';
+      return;
+    }
+    index--;
+  }
 }
