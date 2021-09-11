@@ -267,4 +267,5 @@ char *fixedpoint_format_as_hex(Fixedpoint val);
 //   0 otherwise 
 int hex_is_valid(const char *hex);
 
+void remove_trailing_zeros(char *str);
 #endif // FIXEDPREC_H
