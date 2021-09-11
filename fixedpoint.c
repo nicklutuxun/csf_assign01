@@ -272,11 +272,9 @@ char *fixedpoint_format_as_hex(Fixedpoint val) {
 
   remove_trailing_zeros(hexstr);
 
-  return hexstr;
-  free(hexstr);
   free(whole);
   free(frac);
-
+  return hexstr;
 }
 
 int hex_is_valid(const char *hex) {
