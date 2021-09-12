@@ -184,9 +184,13 @@ Fixedpoint fixedpoint_double(Fixedpoint val) {
 }
 
 int fixedpoint_compare(Fixedpoint left, Fixedpoint right) {
-  // TODO: implement
-  assert(0);
-  return 0;
+  if (left.whole < right.whole) return -1;
+  else if (left.whole > right.whole) return 1;
+  else {
+    if (left.frac < right.frac) return -1;
+    else if (left.whole > right.whole) return 1;
+    else return 0;
+  }
 }
 
 int fixedpoint_is_zero(Fixedpoint val) {
