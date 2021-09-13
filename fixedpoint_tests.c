@@ -579,6 +579,32 @@ void test_halve(TestObjs *objs) {
 }
 
 void test_double(TestObjs *objs) {
+  Fixedpoint res;
+  res = fixedpoint_double(objs->zero);
+  ASSERT(!fixedpoint_is_neg(res));
+  ASSERT(0UL == fixedpoint_whole_part(res));
+  ASSERT(0UL == fixedpoint_frac_part(res));
+
+  res = fixedpoint_double(objs->one);
+  ASSERT(!fixedpoint_is_neg(res));
+  ASSERT(2UL == fixedpoint_whole_part(res));
+  ASSERT(0UL == fixedpoint_frac_part(res));
+
+  res = fixedpoint_double(fixedpoint_create_from_hex("-0.0000000000000001"));
+  ASSERT(0UL == fixedpoint_whole_part(res));
+  ASSERT(0x0000000000000002UL == fixedpoint_frac_part(res));
+
+  res = fixedpoint_double(fixedpoint_create_from_hex("6666666666666666.6666666666666666"));
+  ASSERT(!fixedpoint_is_neg(res));
+  ASSERT(!fixedpoint_is_overflow_pos(res));
+  ASSERT(0xCCCCCCCCCCCCCCCCUL == fixedpoint_whole_part(res));
+  ASSERT(0xCCCCCCCCCCCCCCCCUL == fixedpoint_frac_part(res));
+
+  res = fixedpoint_double(fixedpoint_create_from_hex("-36357F8.445544"));
+  ASSERT(fixedpoint_is_neg(res));
+  ASSERT(!fixedpoint_is_overflow_neg(res));
+  ASSERT(0x6C6AFF0UL == fixedpoint_whole_part(res));
+  ASSERT(0x88AA880000000000UL == fixedpoint_frac_part(res));
 }
 
 void test_hex_is_valid(TestObjs *objs) {
