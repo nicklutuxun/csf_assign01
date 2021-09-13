@@ -198,6 +198,7 @@ void test_create_from_hex(TestObjs *objs) {
 }
 
 void test_fixedpoint_halve(TestObjs *objs) {
+  (void) objs;
   Fixedpoint val1 = fixedpoint_create_from_hex("f6a5865.00f2");
   Fixedpoint val1half = fixedpoint_halve(val1);
   ASSERT(fixedpoint_is_valid(val1half));
@@ -304,27 +305,47 @@ void test_negate(TestObjs *objs) {
 void test_add(TestObjs *objs) {
   (void) objs;
 
-  Fixedpoint lhs, rhs, sum;
+  Fixedpoint lhs1, rhs1, sum1, lhs2, rhs2, sum2, lhs3, rhs3, sum3;
 
-  lhs = fixedpoint_create_from_hex("-c7252a193ae07.7a51de9ea0538c5");
-  rhs = fixedpoint_create_from_hex("d09079.1e6d601");
-  sum = fixedpoint_add(lhs, rhs);
-  ASSERT(fixedpoint_is_neg(sum));
-  ASSERT(0xc7252a0c31d8eUL == fixedpoint_whole_part(sum));
-  ASSERT(0x5be47e8ea0538c50UL == fixedpoint_frac_part(sum));
+  lhs1 = fixedpoint_create_from_hex("-c7252a193ae07.7a51de9ea0538c5");
+  rhs1 = fixedpoint_create_from_hex("d09079.1e6d601");
+  sum1 = fixedpoint_add(lhs1, rhs1);
+  ASSERT(fixedpoint_is_neg(sum1));
+  ASSERT(0xc7252a0c31d8eUL == fixedpoint_whole_part(sum1));
+  ASSERT(0x5be47e8ea0538c50UL == fixedpoint_frac_part(sum1));
+
+  lhs2 = fixedpoint_create_from_hex("ffffffffffffffff");
+  rhs2 = fixedpoint_create_from_hex("1");
+  sum2 = fixedpoint_add(lhs2, rhs2);
+  ASSERT(fixedpoint_is_overflow_pos(sum2));
+
+  lhs3 = fixedpoint_create_from_hex("-ffffffffffffffff");
+  rhs3 = fixedpoint_create_from_hex("-1");
+  sum3 = fixedpoint_add(lhs3, rhs3);
+  ASSERT(fixedpoint_is_overflow_neg(sum3));
 }
 
 void test_sub(TestObjs *objs) {
   (void) objs;
 
-  Fixedpoint lhs, rhs, diff;
+  Fixedpoint lhs1, rhs1, diff1, lhs2, rhs2, diff2, lhs3, rhs3, diff3;
 
-  lhs = fixedpoint_create_from_hex("-ccf35aa3a04a3b.b105");
-  rhs = fixedpoint_create_from_hex("f676e8.58");
-  diff = fixedpoint_sub(lhs, rhs);
-  ASSERT(fixedpoint_is_neg(diff));
-  ASSERT(0xccf35aa496c124UL == fixedpoint_whole_part(diff));
-  ASSERT(0x0905000000000000UL == fixedpoint_frac_part(diff));
+  lhs1 = fixedpoint_create_from_hex("-ccf35aa3a04a3b.b105");
+  rhs1 = fixedpoint_create_from_hex("f676e8.58");
+  diff1 = fixedpoint_sub(lhs1, rhs1);
+  ASSERT(fixedpoint_is_neg(diff1));
+  ASSERT(0xccf35aa496c124UL == fixedpoint_whole_part(diff1));
+  ASSERT(0x0905000000000000UL == fixedpoint_frac_part(diff1));
+
+  lhs2 = fixedpoint_create_from_hex("-ffffffffffffffff");
+  rhs2 = fixedpoint_create_from_hex("1");
+  diff2 = fixedpoint_sub(lhs2, rhs2);
+  ASSERT(fixedpoint_is_overflow_neg(diff2));
+
+  lhs3 = fixedpoint_create_from_hex("ffffffffffffffff");
+  rhs3 = fixedpoint_create_from_hex("-1");
+  diff3 = fixedpoint_sub(lhs3, rhs3);
+  ASSERT(fixedpoint_is_overflow_pos(diff3));
 }
 
 void test_is_overflow_pos(TestObjs *objs) {
