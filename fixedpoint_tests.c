@@ -40,13 +40,10 @@ void test_is_underflow_neg(TestObjs *objs);
 void test_is_err(TestObjs *objs);
 void test_is_neg(TestObjs *objs);
 void test_is_valid(TestObjs *objs);
-
-
 void test_hex_is_valid(TestObjs *objs);
 void test_remove_trailing_zeros(TestObjs *objs);
 void test_halve(TestObjs *objs);
 void test_double(TestObjs *objs);
-void test_is_valid(TestObjs *objs);
 // TODO: add more test functions
 
 int main(int argc, char **argv) {
@@ -72,11 +69,11 @@ int main(int argc, char **argv) {
   TEST(test_is_underflow_neg);
   TEST(test_is_err);
   TEST(test_is_neg);
+  TEST(test_is_valid);
   TEST(test_hex_is_valid);
   TEST(test_remove_trailing_zeros);
   TEST(test_halve);
   TEST(test_double);
-  TEST(test_is_valid);
 
   // IMPORTANT: if you add additional test functions (which you should!),
   // make sure they are included here.  E.g., if you add a test function
@@ -555,28 +552,33 @@ void test_is_valid(TestObjs *objs) {
 void test_halve(TestObjs *objs) {
   Fixedpoint res;
   res = fixedpoint_halve(objs->zero);
-  ASSERT(!fixedpoint_is_underflow_neg(res));
+  ASSERT(!fixedpoint_is_neg(res));
+  ASSERT(0UL == fixedpoint_whole_part(res));
+  ASSERT(0UL == fixedpoint_frac_part(res));
 
   res = fixedpoint_halve(objs->one);
-  ASSERT(!fixedpoint_is_underflow_neg(res));
-
-  // positive underflow
-  res = fixedpoint_halve(objs->max);
-  ASSERT(!fixedpoint_is_underflow_neg(res));
-
-  res = fixedpoint_halve(fixedpoint_create_from_hex("0.0000000000000001"));
-  ASSERT(!fixedpoint_is_underflow_neg(res));
-
-  // negative underflow
-  res = fixedpoint_halve(objs->min);
-  ASSERT(fixedpoint_is_underflow_neg(res));
+  ASSERT(!fixedpoint_is_neg(res));
+  ASSERT(0UL == fixedpoint_whole_part(res));
+  ASSERT(0x8000000000000000UL == fixedpoint_frac_part(res));
 
   res = fixedpoint_halve(fixedpoint_create_from_hex("-0.0000000000000001"));
   ASSERT(fixedpoint_is_underflow_neg(res));
+  ASSERT(0UL == fixedpoint_whole_part(res));
+  ASSERT(0x0000000000000000UL == fixedpoint_frac_part(res));
+
+  res = fixedpoint_halve(fixedpoint_create_from_hex("6666666666666666.8888888888888888"));
+  ASSERT(!fixedpoint_is_neg(res));
+  ASSERT(0x3333333333333333UL == fixedpoint_whole_part(res));
+  ASSERT(0x4444444444444444UL == fixedpoint_frac_part(res));
+
+  res = fixedpoint_halve(fixedpoint_create_from_hex("-36357F8.44AA44"));
+  ASSERT(fixedpoint_is_neg(res));
+  ASSERT(!fixedpoint_is_underflow_neg(res));
+  ASSERT(0x1B1ABFCUL == fixedpoint_whole_part(res));
+  ASSERT(0x2255220000000000UL == fixedpoint_frac_part(res));
 }
 
 void test_double(TestObjs *objs) {
-
 }
 
 void test_hex_is_valid(TestObjs *objs) {
