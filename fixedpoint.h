@@ -267,5 +267,10 @@ char *fixedpoint_format_as_hex(Fixedpoint val);
 //   0 otherwise 
 int hex_is_valid(const char *hex);
 
+// Helper function
+// Remove the trailing zeros from a valid hex string
+//
+// Parameters:
+//   str - the string
 void remove_trailing_zeros(char *str);
 #endif // FIXEDPREC_H
