@@ -34,7 +34,15 @@ void test_negate(TestObjs *objs);
 void test_add(TestObjs *objs);
 void test_sub(TestObjs *objs);
 void test_is_overflow_pos(TestObjs *objs);
+void test_is_overflow_neg(TestObjs *objs);
+void test_is_underflow_pos(TestObjs *objs);
+void test_is_underflow_neg(TestObjs *objs);
 void test_is_err(TestObjs *objs);
+void test_hex_is_valid(TestObjs *objs);
+void test_remove_trailing_zeros(TestObjs *objs);
+void test_halve(TestObjs *objs);
+void test_double(TestObjs *objs);
+void test_is_valid(TestObjs *objs);
 // TODO: add more test functions
 
 int main(int argc, char **argv) {
@@ -55,7 +63,15 @@ int main(int argc, char **argv) {
   TEST(test_add);
   TEST(test_sub);
   TEST(test_is_overflow_pos);
+  TEST(test_is_overflow_neg);
+  TEST(test_is_underflow_pos);
+  TEST(test_is_underflow_neg);
   TEST(test_is_err);
+  TEST(test_hex_is_valid);
+  TEST(test_remove_trailing_zeros);
+  TEST(test_halve);
+  TEST(test_double);
+  TEST(test_is_valid);
 
   // IMPORTANT: if you add additional test functions (which you should!),
   // make sure they are included here.  E.g., if you add a test function
@@ -359,6 +375,7 @@ void test_is_overflow_pos(TestObjs *objs) {
 
   sum = fixedpoint_sub(objs->max, objs->neg_1);
   ASSERT(fixedpoint_is_overflow_pos(sum));
+
 }
 
 void test_is_overflow_neg(TestObjs *objs) {
@@ -366,7 +383,9 @@ void test_is_overflow_neg(TestObjs *objs) {
 }
 
 void test_is_underflow_pos(TestObjs *objs) {
-
+  Fixedpoint large2_half = fixedpoint_halve(objs->large2);
+  ASSERT(fixedpoint_is_underflow_pos(large2_half));
+  
 }
 
 void test_is_underflow_neg(TestObjs *objs) {
@@ -423,10 +442,22 @@ void test_double(TestObjs *objs) {
 }
 
 void test_hex_is_valid(TestObjs *objs) {
+  (void) objs;
 
+  // hex_is_valid has no contraint on length of whole and frac part
+  // It only test whether the hex string is misformed
+  ASSERT(hex_is_valid("88888888888888889.6666666666666666"));
+  ASSERT(hex_is_valid("6666666666666666.88888888888888889"));
+  ASSERT(hex_is_valid("-6666666666666666.8888888888888888"));
+  ASSERT(hex_is_valid("88888888888888889"));
+  ASSERT(hex_is_valid("7.88888888888888889"));
+  ASSERT(!hex_is_valid("123xabc.4"));
+  ASSERT(!hex_is_valid("7.0?4"));
+  ASSERT(hex_is_valid("."));
+  ASSERT(!hex_is_valid("-"));
+  ASSERT(hex_is_valid("1.")); 
 }
 
 void test_remove_trailing_zeros(TestObjs *objs) {
-
 }
 // TODO: implement more test functions
