@@ -6,7 +6,6 @@
 #include "fixedpoint.h"
 
 Fixedpoint fixedpoint_create(uint64_t whole) {
-  // TODO: implement
   Fixedpoint val;
   val.whole = whole;
   val.frac = 0UL;
@@ -15,7 +14,6 @@ Fixedpoint fixedpoint_create(uint64_t whole) {
 }
 
 Fixedpoint fixedpoint_create2(uint64_t whole, uint64_t frac) {
-  // TODO: implement
   Fixedpoint val;
   val.whole = whole;
   val.frac = frac;
@@ -25,7 +23,6 @@ Fixedpoint fixedpoint_create2(uint64_t whole, uint64_t frac) {
 }
 
 Fixedpoint fixedpoint_create_from_hex(const char *hex) {
-  // TODO: implement
   Fixedpoint val;
 
   if (!hex_is_valid(hex)) // error if parameter hex is not valid
@@ -95,50 +92,61 @@ Fixedpoint fixedpoint_create_from_hex(const char *hex) {
 }
 
 uint64_t fixedpoint_whole_part(Fixedpoint val) {
-  // TODO: implement
   return val.whole;
 }
 
 uint64_t fixedpoint_frac_part(Fixedpoint val) {
-  // TODO: implement
   return val.frac;
 }
 
 Fixedpoint fixedpoint_add(Fixedpoint left, Fixedpoint right) {
-  // TODO: implement
   Fixedpoint res;
   uint64_t whole_res;
   uint64_t frac_res;
   int tag_conversion_flag = 0;
+
+  // left and right have same sign
   if (left.tag == right.tag) {
     whole_res = left.whole + right.whole;
+    // if addition of same-signed value result in a smaller value, overflow occurs
     if (whole_res < left.whole || whole_res < right.whole) {
       if (left.tag == TAG_VALID_NONNEGATIVE) res.tag = TAG_POS_OVERFLOW;
       else res.tag = TAG_NEG_OVERFLOW;
+      // indicate that result tag has been confirmed already
       tag_conversion_flag = 1;
     }
     frac_res = left.frac + right.frac;
+    // same logic to check overflow of fraction part
     if (frac_res < left.frac || frac_res < right.frac) {
+      // if fraction part overflow, whole part is added one
       whole_res += 1UL;
     }
+    // if result tag has not been confirmed yet
     if (!tag_conversion_flag) {
+      // if now the whole part is overflowed
       if (whole_res < left.whole || whole_res < right.whole) {
         if (left.tag == TAG_VALID_NONNEGATIVE) res.tag = TAG_POS_OVERFLOW;
         else res.tag = TAG_NEG_OVERFLOW;
       }
+      // if the whole part is not overflowed
       else {
         if (left.tag == TAG_VALID_NONNEGATIVE) res.tag = TAG_VALID_NONNEGATIVE;
         else res.tag = TAG_VALID_NEGATIVE;
       }
     }
   }
+  // when left and right have different signs
   else {
+    // flag indicates if right is larger than left
     int flag = (right.whole > left.whole || (right.whole == left.whole && right.frac > left.frac));
+    // subtract smaller value from bigger value
     whole_res = flag ? (right.whole - left.whole) : (left.whole - right.whole);
     frac_res = flag ? (right.frac - left.frac) : (left.frac - right.frac);
+    // if fraction part is overflowed, whole part is subtracted one
     if (frac_res > (flag ? right.frac : left.frac)) {
       whole_res -= 1UL;
     }
+    // set the result tag to be the tag of the larger value
     if (flag) res.tag = right.tag;
     else res.tag = left.tag;
   }
@@ -148,13 +156,13 @@ Fixedpoint fixedpoint_add(Fixedpoint left, Fixedpoint right) {
 }
 
 Fixedpoint fixedpoint_sub(Fixedpoint left, Fixedpoint right) {
+  // A-B = A+(-B), so we invert the tag of the right
   if (right.tag == TAG_VALID_NEGATIVE) right.tag = TAG_VALID_NONNEGATIVE;
   else if (right.tag == TAG_VALID_NONNEGATIVE) right.tag = TAG_VALID_NEGATIVE;
   return (fixedpoint_add(left, right));
 }
 
 Fixedpoint fixedpoint_negate(Fixedpoint val) {
-  // TODO: implement
   if (val.tag == TAG_VALID_NONNEGATIVE) {
     if (!(fixedpoint_is_zero(val))) val.tag = TAG_VALID_NEGATIVE;
   }
@@ -166,6 +174,7 @@ Fixedpoint fixedpoint_halve(Fixedpoint val) {
   Fixedpoint res;
   uint64_t whole_res = val.whole/2;
   uint64_t frac_res = val.frac;
+  // when fraction part is not divisible by 2, undeflow occurs
   if (frac_res % 2 != 0) {
     res.tag = (val.tag == TAG_VALID_NONNEGATIVE) ? TAG_POS_UNDERFLOW : TAG_NEG_UNDERFLOW;
   }
@@ -173,6 +182,7 @@ Fixedpoint fixedpoint_halve(Fixedpoint val) {
     res.tag = val.tag;
   }
   frac_res = frac_res/2;
+  // if whole part is not divisible by 2, fraction part needs to be added 5 in decimal value
   if (val.whole % 2 != 0) frac_res += 0x8000000000000000UL;
   res.whole = whole_res;
   res.frac = frac_res;
@@ -186,6 +196,7 @@ Fixedpoint fixedpoint_double(Fixedpoint val) {
 int fixedpoint_compare(Fixedpoint left, Fixedpoint right) {
   if (left.whole < right.whole) return -1;
   else if (left.whole > right.whole) return 1;
+  // when whole parts are the same
   else {
     if (left.frac < right.frac) return -1;
     else if (left.whole > right.whole) return 1;
@@ -194,7 +205,6 @@ int fixedpoint_compare(Fixedpoint left, Fixedpoint right) {
 }
 
 int fixedpoint_is_zero(Fixedpoint val) {
-  // TODO: implement
   if ((val.whole == 0UL) && (val.frac == 0UL))
   {
     return 1;
@@ -245,7 +255,6 @@ int fixedpoint_is_valid(Fixedpoint val) {
 }
 
 char *fixedpoint_format_as_hex(Fixedpoint val) {
-  // TODO: implement
   char *hexstr, *whole, *frac;
 
   whole = (char *)calloc(17, sizeof(char));
