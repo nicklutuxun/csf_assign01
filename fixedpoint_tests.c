@@ -34,7 +34,14 @@ void test_negate(TestObjs *objs);
 void test_add(TestObjs *objs);
 void test_sub(TestObjs *objs);
 void test_is_overflow_pos(TestObjs *objs);
+void test_is_overflow_neg(TestObjs *objs);
+void test_is_underflow_pos(TestObjs *objs);
+void test_is_underflow_neg(TestObjs *objs);
 void test_is_err(TestObjs *objs);
+void test_is_neg(TestObjs *objs);
+void test_is_valid(TestObjs *objs);
+
+
 // TODO: add more test functions
 
 int main(int argc, char **argv) {
@@ -55,7 +62,12 @@ int main(int argc, char **argv) {
   TEST(test_add);
   TEST(test_sub);
   TEST(test_is_overflow_pos);
+  TEST(test_is_overflow_neg);
+  TEST(test_is_underflow_pos);
+  TEST(test_is_underflow_neg);
   TEST(test_is_err);
+  TEST(test_is_neg);
+  TEST(test_is_valid);
 
   // IMPORTANT: if you add additional test functions (which you should!),
   // make sure they are included here.  E.g., if you add a test function
@@ -351,6 +363,7 @@ void test_sub(TestObjs *objs) {
 void test_is_overflow_pos(TestObjs *objs) {
   Fixedpoint sum;
 
+  // boundary positive overflow
   sum = fixedpoint_add(objs->max, objs->one);
   ASSERT(fixedpoint_is_overflow_pos(sum));
 
@@ -359,18 +372,80 @@ void test_is_overflow_pos(TestObjs *objs) {
 
   sum = fixedpoint_sub(objs->max, objs->neg_1);
   ASSERT(fixedpoint_is_overflow_pos(sum));
+
+  // no positive overflow
+  sum = fixedpoint_add(objs->max, objs->neg_1);
+  ASSERT(!fixedpoint_is_overflow_pos(sum));
+
+  sum = fixedpoint_add(sum, objs->one);
+  ASSERT(!fixedpoint_is_overflow_pos(sum));
+
+  // negative overflow
+  sum = fixedpoint_sub(objs->min, objs->one);
+  ASSERT(!fixedpoint_is_overflow_pos(sum));
 }
 
 void test_is_overflow_neg(TestObjs *objs) {
+  Fixedpoint sum;
+  
+  // boundary negative overflow
+  sum = fixedpoint_sub(objs->min, objs->one);
+  ASSERT(fixedpoint_is_overflow_neg(sum));
 
+  // positive overflow
+  sum = fixedpoint_add(objs->max, objs->one);
+  ASSERT(!fixedpoint_is_overflow_neg(sum));
+
+  // no negative overflow
+  sum = fixedpoint_sub(objs->zero, objs->min);
+  ASSERT(!fixedpoint_is_overflow_neg(sum));
 }
 
 void test_is_underflow_pos(TestObjs *objs) {
+  Fixedpoint res;
 
+  // no positive underflow
+  res = fixedpoint_halve(objs->zero);
+  ASSERT(!fixedpoint_is_underflow_pos(res));
+
+  res = fixedpoint_halve(objs->one);
+  ASSERT(!fixedpoint_is_underflow_pos(res));
+
+  // positive underflow
+  res = fixedpoint_halve(objs->max);
+  ASSERT(fixedpoint_is_underflow_pos(res));
+
+  res = fixedpoint_halve(fixedpoint_create_from_hex("0.0000000000000001"));
+  ASSERT(fixedpoint_is_underflow_pos(res));
+
+  // negative underflow
+  res = fixedpoint_halve(objs->min);
+  ASSERT(!fixedpoint_is_underflow_pos(res));
 }
 
 void test_is_underflow_neg(TestObjs *objs) {
+  Fixedpoint res;
 
+  // no negative underflow
+  res = fixedpoint_halve(objs->zero);
+  ASSERT(!fixedpoint_is_underflow_neg(res));
+
+  res = fixedpoint_halve(objs->one);
+  ASSERT(!fixedpoint_is_underflow_neg(res));
+
+  // positive underflow
+  res = fixedpoint_halve(objs->max);
+  ASSERT(!fixedpoint_is_underflow_neg(res));
+
+  res = fixedpoint_halve(fixedpoint_create_from_hex("0.0000000000000001"));
+  ASSERT(!fixedpoint_is_underflow_neg(res));
+
+  // negative underflow
+  res = fixedpoint_halve(objs->min);
+  ASSERT(fixedpoint_is_underflow_neg(res));
+
+  res = fixedpoint_halve(fixedpoint_create_from_hex("-0.0000000000000001"));
+  ASSERT(fixedpoint_is_underflow_neg(res));
 }
 
 void test_is_err(TestObjs *objs) {
@@ -407,15 +482,85 @@ void test_is_err(TestObjs *objs) {
 }
 
 void test_is_neg(TestObjs *objs) {
+  // not negative
+  Fixedpoint val1 = fixedpoint_create_from_hex("f6a5865.00f2");
+  ASSERT(!fixedpoint_is_neg(val1));
 
+  Fixedpoint val2 = objs->zero;
+  ASSERT(!fixedpoint_is_neg(val2));
+
+  Fixedpoint val3 = objs->max;
+  ASSERT(!fixedpoint_is_neg(val3));
+
+  // negative
+  Fixedpoint val4 = fixedpoint_create_from_hex("-f6a5865.00f2");
+  ASSERT(fixedpoint_is_neg(val4));
+
+  Fixedpoint val5 = fixedpoint_create_from_hex("-111.f020");
+  ASSERT(fixedpoint_is_neg(val5));
+
+  Fixedpoint val6 = objs->min;
+  ASSERT(fixedpoint_is_neg(val6));
 }
 
 void test_is_valid(TestObjs *objs) {
+  Fixedpoint lhs, rhs, diff, sum;
 
+  // valid
+  Fixedpoint val1 = fixedpoint_create_from_hex("f6a5865.00f2");
+  ASSERT(fixedpoint_is_valid(val1));
+
+  Fixedpoint val2 = fixedpoint_create_from_hex("f6a5865");
+  ASSERT(fixedpoint_is_valid(val2));
+
+  Fixedpoint val3 = fixedpoint_create_from_hex("F6A5865.00F2");
+  ASSERT(fixedpoint_is_valid(val3));
+  
+  Fixedpoint val4 = fixedpoint_create_from_hex("-.f6a5865");
+  ASSERT(fixedpoint_is_valid(val4));
+
+  lhs = fixedpoint_create_from_hex("-ccf35aa3a04a3b.b105");
+  rhs = fixedpoint_create_from_hex("f676e8.58");
+  diff = fixedpoint_sub(lhs, rhs);
+  ASSERT(fixedpoint_is_valid(diff));
+
+  lhs = fixedpoint_create_from_hex("-c7252a193ae07.7a51de9ea0538c5");
+  rhs = fixedpoint_create_from_hex("d09079.1e6d601");
+  sum = fixedpoint_add(lhs, rhs);
+  ASSERT(fixedpoint_is_valid(sum));
+
+  // not valid
+  Fixedpoint val5 = fixedpoint_create_from_hex("f!6a5865");
+  ASSERT(!fixedpoint_is_valid(val5));
+
+  Fixedpoint val6 = fixedpoint_create_from_hex("--f6a5865");
+  ASSERT(!fixedpoint_is_valid(val6));
+
+  Fixedpoint val7 = fixedpoint_halve(objs->max);
+  ASSERT(!fixedpoint_is_valid(val7));
 }
 
 void test_halve(TestObjs *objs) {
+  Fixedpoint res;
+  res = fixedpoint_halve(objs->zero);
+  ASSERT(!fixedpoint_is_underflow_neg(res));
 
+  res = fixedpoint_halve(objs->one);
+  ASSERT(!fixedpoint_is_underflow_neg(res));
+
+  // positive underflow
+  res = fixedpoint_halve(objs->max);
+  ASSERT(!fixedpoint_is_underflow_neg(res));
+
+  res = fixedpoint_halve(fixedpoint_create_from_hex("0.0000000000000001"));
+  ASSERT(!fixedpoint_is_underflow_neg(res));
+
+  // negative underflow
+  res = fixedpoint_halve(objs->min);
+  ASSERT(fixedpoint_is_underflow_neg(res));
+
+  res = fixedpoint_halve(fixedpoint_create_from_hex("-0.0000000000000001"));
+  ASSERT(fixedpoint_is_underflow_neg(res));
 }
 
 void test_double(TestObjs *objs) {
