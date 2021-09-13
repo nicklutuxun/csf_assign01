@@ -11,6 +11,8 @@ typedef struct {
   Fixedpoint one_fourth;
   Fixedpoint large1;
   Fixedpoint large2;
+  Fixedpoint neg_1;
+  Fixedpoint neg_one_eighth;
   Fixedpoint min_magnitude;
   Fixedpoint max;
   Fixedpoint min;
@@ -76,6 +78,9 @@ TestObjs *setup(void) {
   objs->large1 = fixedpoint_create2(0x4b19efceaUL, 0xec9a1e2418UL);
   objs->large2 = fixedpoint_create2(0xfcbf3d5UL, 0x4d1a23c24fafUL);
   objs->max = fixedpoint_create2(0xffffffffffffffffUL, 0xffffffffffffffffUL);
+  objs->neg_1 = fixedpoint_create(-1UL);
+  objs->neg_one_eighth = fixedpoint_create2(0UL, 0x2000000000000000UL);
+  objs->min = fixedpoint_create_from_hex("-ffffffffffffffff.ffffffffffffffff");
 
   return objs;
 }
@@ -91,6 +96,10 @@ void test_whole_part(TestObjs *objs) {
   ASSERT(0UL == fixedpoint_whole_part(objs->one_fourth));
   ASSERT(0x4b19efceaUL == fixedpoint_whole_part(objs->large1));
   ASSERT(0xfcbf3d5UL == fixedpoint_whole_part(objs->large2));
+  ASSERT(0xffffffffffffffffUL == fixedpoint_whole_part(objs->max));
+  ASSERT(1UL == fixedpoint_whole_part(objs->neg_1));
+  ASSERT(0UL == fixedpoint_whole_part(objs->neg_one_eighth));
+  ASSERT(0xffffffffffffffffUL == fixedpoint_whole_part(objs->min));
 }
 
 void test_frac_part(TestObjs *objs) {
@@ -100,6 +109,10 @@ void test_frac_part(TestObjs *objs) {
   ASSERT(0x4000000000000000UL == fixedpoint_frac_part(objs->one_fourth));
   ASSERT(0xec9a1e2418UL == fixedpoint_frac_part(objs->large1));
   ASSERT(0x4d1a23c24fafUL == fixedpoint_frac_part(objs->large2));
+  ASSERT(0xffffffffffffffffUL == fixedpoint_frac_part(objs->max));
+  ASSERT(0UL == fixedpoint_frac_part(objs->neg_1));
+  ASSERT(0x2000000000000000UL == fixedpoint_frac_part(objs->neg_one_eighth));
+  ASSERT(0xffffffffffffffffUL == fixedpoint_frac_part(objs->min));
 }
 
 void test_create_from_hex(TestObjs *objs) {
@@ -198,7 +211,7 @@ void test_fixedpoint_halve(TestObjs *objs) {
   Fixedpoint val3 = fixedpoint_create_from_hex("-f6a5865.00f2");
   Fixedpoint val3half = fixedpoint_halve(val3);
   ASSERT(0x7b52c32UL == fixedpoint_whole_part(val3half));
-  ASSERT(0x8079000000000000UL == fixedpoint_frac_part(val3half));
+  ASSERT(0x8079000000000000UL == fixedpoint_frac_part(val3half));  
 }
 
 void test_format_as_hex(TestObjs *objs) {
@@ -237,6 +250,9 @@ void test_negate(TestObjs *objs) {
   ASSERT(!fixedpoint_is_neg(objs->one_fourth));
   ASSERT(!fixedpoint_is_neg(objs->large1));
   ASSERT(!fixedpoint_is_neg(objs->large2));
+  ASSERT(fixedpoint_is_neg(objs->neg_1));
+  ASSERT(fixedpoint_is_neg(objs->neg_one_eighth));
+  ASSERT(fixedpoint_is_neg(objs->min));
 
   // negate the test fixture values
   Fixedpoint zero_neg = fixedpoint_negate(objs->zero);
@@ -245,16 +261,24 @@ void test_negate(TestObjs *objs) {
   Fixedpoint one_fourth_neg = fixedpoint_negate(objs->one_fourth);
   Fixedpoint large1_neg = fixedpoint_negate(objs->large1);
   Fixedpoint large2_neg = fixedpoint_negate(objs->large2);
+  Fixedpoint neg_1_neg = fixedpoint_negate(objs->neg_1);
+  Fixedpoint neg_one_eighth_neg = fixedpoint_negate(objs->neg_one_eighth);
+  Fixedpoint min_neg = fixedpoint_negate(objs->min);
 
   // zero does not become negative when negated
   ASSERT(!fixedpoint_is_neg(zero_neg));
 
-  // all of the other values should have become negative when negated
+  // non-negative values become negative
   ASSERT(fixedpoint_is_neg(one_neg));
   ASSERT(fixedpoint_is_neg(one_half_neg));
   ASSERT(fixedpoint_is_neg(one_fourth_neg));
   ASSERT(fixedpoint_is_neg(large1_neg));
   ASSERT(fixedpoint_is_neg(large2_neg));
+  
+  // negative values become non-negative
+  ASSERT(!fixedpoint_is_neg(neg_1_neg));
+  ASSERT(!fixedpoint_is_neg(neg_one_eighth_neg));
+  ASSERT(!fixedpoint_is_neg(min_neg));
 
   // magnitudes should stay the same
   ASSERT(0UL == fixedpoint_whole_part(objs->zero));
@@ -269,6 +293,12 @@ void test_negate(TestObjs *objs) {
   ASSERT(0x4000000000000000UL == fixedpoint_frac_part(objs->one_fourth));
   ASSERT(0xec9a1e2418UL == fixedpoint_frac_part(objs->large1));
   ASSERT(0x4d1a23c24fafUL == fixedpoint_frac_part(objs->large2));
+  ASSERT(1UL == fixedpoint_whole_part(objs->neg_1));
+  ASSERT(0UL == fixedpoint_whole_part(objs->neg_one_eighth));
+  ASSERT(0xffffffffffffffffUL == fixedpoint_whole_part(objs->min));
+  ASSERT(0UL == fixedpoint_frac_part(objs->neg_1));
+  ASSERT(0x2000000000000000UL == fixedpoint_frac_part(objs->neg_one_eighth));
+  ASSERT(0xffffffffffffffffUL == fixedpoint_frac_part(objs->min));
 }
 
 void test_add(TestObjs *objs) {
@@ -277,7 +307,7 @@ void test_add(TestObjs *objs) {
   Fixedpoint lhs, rhs, sum;
 
   lhs = fixedpoint_create_from_hex("-c7252a193ae07.7a51de9ea0538c5");
-  rhs = fixedpoint_create_from_hex("d09079.1e6d601");
+  rhs = fixedpoint_create_from_hex("ddd09079.1e6d601");
   sum = fixedpoint_add(lhs, rhs);
   ASSERT(fixedpoint_is_neg(sum));
   ASSERT(0xc7252a0c31d8eUL == fixedpoint_whole_part(sum));
@@ -306,10 +336,20 @@ void test_is_overflow_pos(TestObjs *objs) {
   sum = fixedpoint_add(objs->one, objs->max);
   ASSERT(fixedpoint_is_overflow_pos(sum));
 
-  Fixedpoint negative_one = fixedpoint_negate(objs->one);
-
-  sum = fixedpoint_sub(objs->max, negative_one);
+  sum = fixedpoint_sub(objs->max, objs->neg_1);
   ASSERT(fixedpoint_is_overflow_pos(sum));
+}
+
+void test_is_overflow_neg(TestObjs *objs) {
+
+}
+
+void test_is_underflow_pos(TestObjs *objs) {
+
+}
+
+void test_is_underflow_neg(TestObjs *objs) {
+
 }
 
 void test_is_err(TestObjs *objs) {
@@ -345,4 +385,27 @@ void test_is_err(TestObjs *objs) {
   ASSERT(fixedpoint_is_err(err7));
 }
 
+void test_is_neg(TestObjs *objs) {
+
+}
+
+void test_is_valid(TestObjs *objs) {
+
+}
+
+void test_halve(TestObjs *objs) {
+
+}
+
+void test_double(TestObjs *objs) {
+
+}
+
+void test_hex_is_valid(TestObjs *objs) {
+
+}
+
+void test_remove_trailing_zeros(TestObjs *objs) {
+
+}
 // TODO: implement more test functions
