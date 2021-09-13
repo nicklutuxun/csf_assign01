@@ -605,6 +605,11 @@ void test_double(TestObjs *objs) {
   ASSERT(!fixedpoint_is_overflow_neg(res));
   ASSERT(0x6C6AFF0UL == fixedpoint_whole_part(res));
   ASSERT(0x88AA880000000000UL == fixedpoint_frac_part(res));
+
+  res = fixedpoint_double(objs->max);
+  ASSERT(fixedpoint_is_overflow_pos(res));
+  ASSERT(0xFFFFFFFFFFFFFFFFUL == fixedpoint_whole_part(res));
+  ASSERT(0xFFFFFFFFFFFFFFFEUL == fixedpoint_frac_part(res));
 }
 
 void test_hex_is_valid(TestObjs *objs) {
