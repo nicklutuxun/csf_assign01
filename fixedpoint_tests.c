@@ -630,5 +630,17 @@ void test_hex_is_valid(TestObjs *objs) {
 }
 
 void test_remove_trailing_zeros(TestObjs *objs) {
+  (void) objs;
+
+  char str1[] = "100000000000";
+  char str2[] = "0";
+  char str3[] = "-100000000000";
+  
+  remove_trailing_zeros(str1);
+  remove_trailing_zeros(str2);
+  remove_trailing_zeros(str3);
+
+  ASSERT(strcmp(str1, "1") == 0);
+  ASSERT(strcmp(str2, "0") == 0);
+  ASSERT(strcmp(str3, "-1") == 0);
 }
-// TODO: implement more test functions
