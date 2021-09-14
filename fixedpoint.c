@@ -193,15 +193,36 @@ Fixedpoint fixedpoint_double(Fixedpoint val) {
   return fixedpoint_add(val, val);
 }
 
-int fixedpoint_compare(Fixedpoint left, Fixedpoint right) {
-  if (left.whole < right.whole) return -1;
-  else if (left.whole > right.whole) return 1;
-  // when whole parts are the same
-  else {
-    if (left.frac < right.frac) return -1;
-    else if (left.whole > right.whole) return 1;
-    else return 0;
+int fixedpoint_compare(Fixedpoint left, Fixedpoint right) {  
+  if (left.tag == right.tag)
+  {
+    if (left.tag == TAG_VALID_NONNEGATIVE) {
+      if (left.whole > right.whole) return 1;
+      if (left.whole < right.whole) return -1;
+      if (left.whole == right.whole)
+      {
+        if (left.frac > right.frac) return 1;
+        if (left.frac < right.frac) return -1;
+        return 0;
+      }
+    }
+
+    if (left.tag == TAG_VALID_NEGATIVE) {
+      if (left.whole > right.whole) return -1;
+      if (left.whole < right.whole) return 1;
+      if (left.whole == right.whole)
+      {
+        if (left.frac > right.frac) return -1;
+        if (left.frac < right.frac) return 1;
+        return 0;
+      }
+    }
+  } else {
+    if (left.tag == TAG_VALID_NONNEGATIVE) return 1;
+    else return -1;
   }
+
+  return 0;
 }
 
 int fixedpoint_is_zero(Fixedpoint val) {
