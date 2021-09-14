@@ -3,6 +3,24 @@
 #include "fixedpoint.h"
 #include "tctest.h"
 
+#define CHECK_GREATER(a, b) \
+do { \
+  ASSERT(fixedpoint_compare(a, b) > 0); \
+  ASSERT(fixedpoint_compare(b, a) < 0); \
+} while (0)
+
+#define CHECK_LESS(a, b) \
+do { \
+  ASSERT(fixedpoint_compare(a, b) < 0); \
+  ASSERT(fixedpoint_compare(b, a) > 0); \
+} while (0)
+
+#define CHECK_EQUAL(a, b) \
+do { \
+  ASSERT(fixedpoint_compare(a, b) == 0); \
+  ASSERT(fixedpoint_compare(b, a) == 0); \
+} while (0)
+
 // Test fixture object, has some useful values for testing
 typedef struct {
   Fixedpoint zero;
@@ -44,6 +62,7 @@ void test_hex_is_valid(TestObjs *objs);
 void test_remove_trailing_zeros(TestObjs *objs);
 void test_halve(TestObjs *objs);
 void test_double(TestObjs *objs);
+void test_compare(TestObjs *objs);
 // TODO: add more test functions
 
 int main(int argc, char **argv) {
@@ -74,6 +93,7 @@ int main(int argc, char **argv) {
   TEST(test_remove_trailing_zeros);
   TEST(test_halve);
   TEST(test_double);
+  TEST(test_compare);
 
   // IMPORTANT: if you add additional test functions (which you should!),
   // make sure they are included here.  E.g., if you add a test function
@@ -213,6 +233,36 @@ void test_create_from_hex(TestObjs *objs) {
   ASSERT(fixedpoint_is_valid(val18));
   ASSERT(0xf6a5865UL == fixedpoint_whole_part(val18));
   ASSERT(0x00f2000000000000UL == fixedpoint_frac_part(val18));
+}
+
+void test_compare(TestObjs *objs) {
+  (void) objs;
+
+  Fixedpoint lhs, rhs;
+
+  lhs = fixedpoint_create2(0xed3fdUL, 0x978c68d97fdc4c00UL);
+  lhs = fixedpoint_negate(lhs);
+  rhs = fixedpoint_create2(0xadUL, 0x46e3000000000000UL);
+  CHECK_LESS(lhs, rhs);
+  lhs = fixedpoint_create2(0x45c9UL, 0x2921000000000000UL);
+  rhs = fixedpoint_create2(0xc08ce15b872a76UL, 0x4000000000000000UL);
+  rhs = fixedpoint_negate(rhs);
+  CHECK_GREATER(lhs, rhs);
+  lhs = fixedpoint_create2(0x1eUL, 0x15463623cb237000UL);
+  rhs = fixedpoint_create2(0xed1d804ed08614UL, 0xcf70000000000000UL);
+  CHECK_LESS(lhs, rhs);
+  lhs = fixedpoint_create2(0xb321ff5a73UL, 0x3f00000000000000UL);
+  lhs = fixedpoint_negate(lhs);
+  rhs = fixedpoint_create2(0x32ab1a2acdad4UL, 0xcc71794f40490000UL);
+  CHECK_LESS(lhs, rhs);
+  lhs = fixedpoint_create2(0x664130UL, 0x90e0000000000000UL);
+  rhs = fixedpoint_create2(0x82848f6UL, 0xb15a9a2fd9000000UL);
+  rhs = fixedpoint_negate(rhs);
+  CHECK_GREATER(lhs, rhs);
+  lhs = fixedpoint_create2(0x0UL, 0x0UL);
+  rhs = fixedpoint_create2(0x0UL, 0x0UL);
+  rhs = fixedpoint_negate(rhs);
+  CHECK_EQUAL(lhs, rhs);
 }
 
 void test_fixedpoint_halve(TestObjs *objs) {
